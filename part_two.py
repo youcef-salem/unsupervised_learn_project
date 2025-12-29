@@ -101,7 +101,7 @@ def standardize_data(X_train, X_test):
 
 def apply_elbow_method(X_train_scaled, k_range=range(1, 11)):
     """
-    Task 2: Apply the Elbow Method to choose optimal k (0.75pt)
+    Task 2: Apply the Elbow Method to choose optimal k 
     """
     print("\n" + "=" * 60)
     print("2. ELBOW METHOD - Finding Optimal Number of Clusters")
@@ -173,7 +173,7 @@ def apply_elbow_method(X_train_scaled, k_range=range(1, 11)):
 
 def train_kmeans(X_train_scaled, n_clusters):
     """
-    Task 3: Import K-Means and train using training set (0.75pt)
+    Task 3: Import K-Means and train using training set 
     """
     print("\n" + "=" * 60)
     print(f"3. TRAINING K-MEANS MODEL (k={n_clusters})")
@@ -208,7 +208,7 @@ def train_kmeans(X_train_scaled, n_clusters):
 
 def get_cluster_labels(kmeans, X_train_scaled, X_test_scaled):
     """
-    Task 4: Obtain cluster labels for training and test data (0.5pt)
+    Task 4: Obtain cluster labels for training and test data 
     """
     print("\n" + "=" * 60)
     print("4. OBTAINING CLUSTER LABELS")
@@ -239,7 +239,7 @@ def get_cluster_labels(kmeans, X_train_scaled, X_test_scaled):
 
 def display_cluster_centers(kmeans, feature_names):
     """
-    Task 5: Display the cluster centers (0.5pt)
+    Task 5: Display the cluster centers 
     """
     print("\n" + "=" * 60)
     print("5. CLUSTER CENTERS")
