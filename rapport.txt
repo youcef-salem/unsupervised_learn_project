@@ -1,0 +1,285 @@
+================================================================================
+                    HEART DISEASE CLUSTERING PROJECT - REPORT
+                         USTHB - Faculty of Computer Science
+================================================================================
+
+STUDENT NAMES: _____________________ GROUP: _____
+
+================================================================================
+                            DATASET DESCRIPTION
+================================================================================
+
+The Heart Disease dataset is a real-world medical dataset originally collected 
+to investigate factors associated with heart disease in patients. It contains 
+clinical and demographic information about patients.
+
+FEATURES (13 attributes + 1 target):
+1.  age      - Age of the patient (years)
+2.  sex      - Gender (1 = male, 0 = female)
+3.  cp       - Chest pain type (0-3)
+4.  trestbps - Resting blood pressure (mm Hg)
+5.  chol     - Serum cholesterol (mg/dl)
+6.  fbs      - Fasting blood sugar > 120 mg/dl (1 = true, 0 = false)
+7.  restecg  - Resting ECG results (0-2)
+8.  thalach  - Maximum heart rate achieved
+9.  exang    - Exercise induced angina (1 = yes, 0 = no)
+10. oldpeak  - ST depression induced by exercise
+11. slope    - Slope of peak exercise ST segment (0-2)
+12. ca       - Number of major vessels colored by fluoroscopy (0-3)
+13. thal     - Thalassemia type (0-3)
+14. target   - Heart disease presence (REMOVED for unsupervised learning)
+
+Dataset Size: 303 samples
+
+================================================================================
+                     PART 1 - DATA EXPLORATION (3.5 points)
+================================================================================
+
+1. LOAD DATASET (0.25pt)
+   - Dataset loaded using pandas.read_csv()
+   - Original shape: 303 rows x 14 columns
+
+2. DISPLAY INFORMATION (0.5pt)
+   - First 5 rows displayed using df.head()
+   - Shape: 303 rows, 14 columns
+   - Data types: mostly int64 and float64
+
+3. REMOVE TARGET COLUMN (0.25pt)
+   - Target column removed for unsupervised learning
+   - K-Means finds patterns without using labels
+
+4. BASIC STATISTICS (0.5pt)
+   - Computed mean, std, min, max for all features
+   - Helps understand data distribution and scale
+
+5. VISUALIZATIONS (0.5pt)
+   - Histograms: Show distribution of each feature
+   - Box plots: Identify outliers and quartiles
+   - Scatter plots: Show relationships between features (age, trestbps, chol, thalach)
+
+6. MISSING VALUES (0.25pt)
+   - Checked for NaN/null values
+   - Removed rows with missing data if found
+
+7. IRRELEVANT COLUMNS (0.25pt)
+   - Checked for patient identifiers (id, patient_id, name)
+   - None found in this dataset
+
+8. DUPLICATES (0.25pt)
+   - Checked for duplicate rows
+   - Removed duplicates if found
+
+9. ONE HOT ENCODING (0.25pt)
+   - Categorical columns: cp, restecg, slope, ca, thal, sex, fbs, exang
+   - Applied pd.get_dummies() for encoding
+   - Expands categorical features into binary columns
+
+10. FEATURE SELECTION (0.25pt)
+    - All preprocessed features selected for clustering
+    - Features capture patient health profile
+
+11. NORMALIZATION (0.25pt)
+    - StandardScaler applied (mean=0, std=1)
+    - Important for K-Means: ensures equal feature influence
+
+================================================================================
+                     PART 2 - MODEL TRAINING (3 points)
+================================================================================
+
+1. TRAIN/TEST SPLIT (0.5pt)
+   - 80% training set, 20% test set
+   - random_state=42 for reproducibility
+
+   WHY SPLITTING IS USEFUL IN UNSUPERVISED LEARNING:
+   
+   Even though unsupervised learning has no labels, splitting is useful for:
+   
+   a) GENERALIZATION TESTING:
+      - Check if clusters found in training data apply to unseen test data
+      - Ensures the model doesn't overfit to specific data patterns
+   
+   b) MODEL VALIDATION:
+      - Evaluate clustering stability and consistency
+      - Compare cluster assignments between train and test sets
+   
+   c) HYPERPARAMETER TUNING:
+      - Use training set to determine optimal k (number of clusters)
+      - Validate the choice on the test set
+   
+   d) AVOIDING DATA LEAKAGE:
+      - Preprocessing (like scaling) should be fit on training data only
+      - Then applied to test data to simulate real-world scenarios
+   
+   e) QUALITY METRICS:
+      - Calculate metrics (silhouette score, inertia) on test set
+      - Provides unbiased evaluation of clustering quality
+
+2. ELBOW METHOD (0.75pt)
+   - Tested k = 1 to 10
+   - Plotted Inertia vs k
+   
+   HOW TO CHOOSE k USING ELBOW METHOD:
+   
+   The Elbow Method works by:
+   
+   a) PLOTTING INERTIA vs k:
+      - Inertia = sum of squared distances from points to their cluster centers
+      - As k increases, inertia always decreases
+   
+   b) FINDING THE "ELBOW":
+      - Look for the point where inertia decrease slows dramatically
+      - This creates an "elbow" shape in the curve
+      - The elbow represents diminishing returns from adding more clusters
+   
+   c) INTERPRETING THE CURVE:
+      - Before elbow: Adding clusters significantly reduces inertia
+      - After elbow: Adding clusters provides minimal improvement
+      - The elbow point balances complexity vs. clustering quality
+
+3. K-MEANS TRAINING (0.75pt)
+   - Algorithm: sklearn.cluster.KMeans
+   - Parameters: init='k-means++', n_init=10, max_iter=300
+   - k-means++ ensures smart centroid initialization
+
+4. CLUSTER LABELS (0.5pt)
+   - Training labels: kmeans.labels_
+   - Test labels: kmeans.predict(X_test_scaled)
+   - Distribution shown for both sets
+
+5. CLUSTER CENTERS (0.5pt)
+   - Displayed as DataFrame with feature names
+   - Visualized as heatmap
+   
+   INTERPRETING CLUSTER CENTERS:
+   - Each row represents a cluster centroid in the feature space
+   - Values are standardized (mean=0, std=1 for original data)
+   - Positive values: Above average for that feature
+   - Negative values: Below average for that feature
+   - Near zero: Close to the average
+
+================================================================================
+                     PART 3 - EVALUATION (3.5 points)
+================================================================================
+
+1. EVALUATION METRICS (0.75pt)
+
+   a) INERTIA (Within-Cluster Sum of Squares - WCSS):
+      - Definition: Sum of squared distances from each point to its cluster center
+      - Formula: Σ ||xi - cj||² for point xi in cluster j with center cj
+      - Interpretation: Lower values = tighter, more compact clusters
+      - Note: Always decreases as k increases (use with Elbow Method)
+   
+   b) SILHOUETTE SCORE:
+      - Definition: Measures how similar a point is to its own cluster vs other clusters
+      - Range: [-1, +1]
+        * +1: Points are perfectly matched to their cluster
+        *  0: Points are on cluster boundaries
+        * -1: Points may be assigned to wrong cluster
+      - Interpretation: Higher is better (> 0.5 is generally good)
+   
+   c) DAVIES-BOULDIN INDEX:
+      - Definition: Ratio of within-cluster to between-cluster distances
+      - Range: [0, ∞) - no upper bound
+      - Interpretation: Lower values = better cluster separation
+      - Values < 1 indicate good clustering
+
+2. METRICS COMPARISON FOR DIFFERENT k (0.75pt)
+   - Computed all three metrics for k = 2 to 10
+   - Created comparison table and plots
+   - Best k identified based on:
+     * Silhouette Score: highest value
+     * Davies-Bouldin Index: lowest value
+     * Inertia: elbow point
+
+3. INTERPRETATION OF CLUSTER QUALITY (1pt)
+
+   SILHOUETTE SCORE THRESHOLDS:
+   - > 0.70: EXCELLENT - Strong cluster structure
+   - > 0.50: GOOD - Reasonable cluster structure
+   - > 0.25: FAIR - Weak structure, possible overlap
+   - < 0.25: POOR - Clusters may be artificial
+
+   DAVIES-BOULDIN INDEX THRESHOLDS:
+   - < 0.50: EXCELLENT - Very well-separated clusters
+   - < 1.00: GOOD - Well-separated clusters
+   - < 1.50: FAIR - Moderate cluster separation
+   - > 1.50: POOR - Clusters not well separated
+
+   KEY INSIGHTS:
+   - Higher Silhouette Score = points are well-matched to their clusters
+   - Lower Davies-Bouldin Index = clusters are more distinct
+   - If metrics are poor, consider:
+     * Different number of clusters
+     * Different features or feature scaling
+     * Different clustering algorithm (DBSCAN, hierarchical, etc.)
+
+4. VISUALIZATIONS (1pt)
+   - 2D PCA projection with colored clusters and centroids
+   - Silhouette analysis plot for each cluster
+   - Cluster size distribution (bar chart and pie chart)
+   - Cluster centers heatmap
+
+================================================================================
+                         RESULTS INTERPRETATION
+================================================================================
+
+CLUSTERING RESULTS:
+- Optimal k selected: [TO BE FILLED AFTER RUNNING]
+- Inertia: [VALUE]
+- Silhouette Score: [VALUE] - [QUALITY ASSESSMENT]
+- Davies-Bouldin Index: [VALUE] - [QUALITY ASSESSMENT]
+
+CLUSTER PROFILES:
+- Cluster 0: [DESCRIPTION BASED ON CENTER VALUES]
+- Cluster 1: [DESCRIPTION BASED ON CENTER VALUES]
+- Cluster 2: [DESCRIPTION BASED ON CENTER VALUES]
+(Add more clusters as needed)
+
+CONCLUSIONS:
+1. The K-Means algorithm successfully identified [k] distinct patient groups
+2. Clusters represent different clinical profiles based on health indicators
+3. The clustering quality is [GOOD/ACCEPTABLE/WEAK] based on evaluation metrics
+4. These clusters could potentially help in:
+   - Identifying high-risk patient groups
+   - Personalizing treatment approaches
+   - Understanding patterns in heart disease factors
+
+================================================================================
+                            FILES GENERATED
+================================================================================
+
+Data Files:
+- heart_cleaned.csv (preprocessed dataset)
+
+Part 1 Visualizations:
+- histograms.png
+- boxplots.png
+- scatterplots.png
+
+Part 2 Visualizations:
+- elbow_method.png
+- cluster_centers.png
+
+Part 3 Visualizations:
+- metrics_comparison.png
+- clustering_2d.png
+- silhouette_analysis.png
+- cluster_distribution.png
+- cluster_centers_heatmap.png
+
+Python Files:
+- part_one.py (Data Exploration)
+- part_two.py (Model Training)
+- part_three.py (Evaluation)
+- init.py (Main execution file)
+
+================================================================================
+                              HOW TO RUN
+================================================================================
+
+Execute the complete project:
+    python init.py
+
+This will run Part 1, Part 2, and Part 3 sequentially with all visualizations.
+
+================================================================================
